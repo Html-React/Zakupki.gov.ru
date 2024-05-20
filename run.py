@@ -1,12 +1,16 @@
 import logging
 from tqdm import tqdm
-from src import DataPreparation, RegionDataProcessor
+from datetime import datetime
+from src import HTTPClient,  DataFetcher, DataSaver, RegionDataProcessor
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=20, filename="logfile.log", filemode="w", format="%(asctime)s %(levelname)s %(message)s",
-                        encoding='utf-8')
-    data_preparation = DataPreparation()
+    logging.basicConfig(level=logging.INFO, filename="logfile.log", filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s", encoding='utf-8')
+
+    http_client = HTTPClient()
+    data_fetcher = DataFetcher(http_client)
+    data_saver = DataSaver()
 
     regions = [
         ("Dalnevostochnyy_federalnyy_okrug", "5277399", "OKER36"),
@@ -19,12 +23,12 @@ if __name__ == "__main__":
         ("Yuzhnyy_federalnyy_okrug", "6325041", "OKER37")
     ]
 
-    for region_info in tqdm(regions, desc='Выполняется процесс подготовки данных, подождите',
-                            bar_format='{l_bar}{bar}', colour='green'):
+    for region_info in tqdm(regions, desc='Выполняется процесс подготовки данных, подождите', bar_format='{l_bar}{bar}',
+                            colour='green'):
         region_processor = RegionDataProcessor(*region_info)
-        region_processor.fetch_and_process_data(data_preparation)
-        data_preparation.save_to_file(f"result/{region_info[0]}_{data_preparation.current_date}.csv",
-                                      '\n'.join(region_processor.result))
+        region_processor.fetch_and_process_data(data_fetcher)
+        data_saver.save_to_file(f"result/{region_info[0]}_{datetime.now().strftime('%Y-%m-%d')}.csv",
+                                '\n'.join(region_processor.result))
 
     print(f"Данные подготовлены и записаны")
-    logging.info(f"Данные подготовлены и записаны: {data_preparation.current_date}")
+    logging.info(f"Данные подготовлены и записаны: {datetime.now().strftime('%Y-%m-%d')}")

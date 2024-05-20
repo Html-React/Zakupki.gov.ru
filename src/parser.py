@@ -1,12 +1,11 @@
 import requests
 from fake_useragent import UserAgent
 import time
-from datetime import datetime
 import logging
 import os
 
 
-class RequestWrapper:
+class HTTPClient:
     def __init__(self):
         self.ua = UserAgent()
         self.headers = {
@@ -21,18 +20,23 @@ class RequestWrapper:
             try:
                 response = requests.get(url, headers=self.headers, timeout=timeout)
                 response.raise_for_status()
+                logging.debug(f"Успешно получен URL: {url}")
                 return response.content.decode('cp1251')
+            except requests.exceptions.Timeout as e:
+                logging.error(f"Время ожидания истекло при получении URL-адреса: {e}")
+            except requests.exceptions.HTTPError as e:
+                logging.error(f"Ошибка HTTP при получении URL-адреса: {e}")
             except requests.exceptions.RequestException as e:
-                logging.error(f"Ошибка при получении URL-адреса: {e}")
-                logging.info("Повторная попытка выполнения запроса...")
-                time.sleep(5)  # Пауза перед повторной попыткой
+                logging.error(f"Произошла ошибка при получении URL-адреса: {e}")
+            logging.info("Повторная попытка выполнения запроса...")
+            time.sleep(5)  # Пауза перед повторной попыткой
+        logging.error(f"Попытки получить URL после {max_retries} не увенчались успехом: {url}")
         return None
 
 
-class DataPreparation:
-    def __init__(self):
-        self.request_wrapper = RequestWrapper()
-        self.current_date = datetime.now().strftime("%Y-%m-%d")
+class DataFetcher:
+    def __init__(self, client):
+        self.http_client = client
 
     @staticmethod
     def get_file_periods():
@@ -56,10 +60,14 @@ class DataPreparation:
                 customer_place_codes=customer_place_codes,
                 file_p=file_p
             )
-            response_content = self.request_wrapper.fetch_url(full_url)
+            logging.debug(f"Получение данных из URL-адреса: {full_url}")
+            response_content = self.http_client.fetch_url(full_url)
             if response_content:
+                logging.debug(f"Успешно получены данные за период: {file_p}")
                 yield response_content
 
+
+class DataSaver:
     @staticmethod
     def save_to_file(file_path, data):
         try:
@@ -77,26 +85,28 @@ class DataPreparation:
 
 
 class RegionDataProcessor:
+    URL_TEMPLATE = (
+        """https://zakupki.gov.ru/epz/order/orderCsvSettings/download.html?morphology=on&search-filter=%D0%94%D0%B0
+        %D1%82%D0%B5+%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D1%8F&pageNumber=1&sortDirection=false
+        &recordsPerPage=_10&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on&pc=on&currencyIdGeneral=-1
+        &customerPlace={customer_place}&customerPlaceCodes={customer_place_codes}&gws=%D0%92%D1%8B%D0%B1%D0%B5%D1%80%
+        D0%B8%D1%82%D0%B5+%D1%82%D0%B8%D0%BF+%D0%B7%D0%B0%D0%BA%D1%83%D0%BF%D0%BA%D0%B8&OrderPlacementSmall
+        BusinessSubject=on&OrderPlacementRnpData=on&OrderPlacementExecutionRequirement=on&orderPlacement94_0=0
+        &orderPlacement94_1=0&orderPlacement94_2=0&from={file_p}&registryNumberCsv=true""")
+
     def __init__(self, name, customer_place, customer_place_codes):
         self.name = name
         self.customer_place = customer_place
         self.customer_place_codes = customer_place_codes
         self.result = []
 
-    def fetch_and_process_data(self, data_preparation):
-        url_template = (
-            'https://zakupki.gov.ru/epz/order/orderCsvSettings/download.html?morphology=on&search-filter=%D0'
-            '%94%D0%B0%D1%82%D0%B5+%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D1%8F&pageNumber'
-            '=1&sortDirection=false&recordsPerPage=_10&showLotsInfoHidden=false&sortBy=UPDATE_DATE&fz44=on'
-            '&pc=on&currencyIdGeneral=-1&customerPlace={customer_place}&customerPlaceCodes={'
-            'customer_place_codes}&gws=%D0%92%D1%8B%D0%B1%D0%B5%D1%80%D0%B8%D1%82%D0%B5+%D1%82%D0%B8%D0%BF'
-            '+%D0%B7%D0%B0%D0%BA%D1%83%D0%BF%D0%BA%D0%B8&OrderPlacementSmallBusinessSubject=on'
-            '&OrderPlacementRnpData=on&OrderPlacementExecutionRequirement=on&orderPlacement94_0=0'
-            '&orderPlacement94_1=0&orderPlacement94_2=0&from={file_p}&registryNumberCsv=true')
-
-        for response_content in data_preparation.fetch_data(url_template, self.customer_place,
-                                                            self.customer_place_codes):
+    def fetch_and_process_data(self, fetcher):
+        logging.debug(f"Начало обработки данных для региона: {self.name}")
+        for response_content in fetcher.fetch_data(self.URL_TEMPLATE,
+                                                   self.customer_place,
+                                                   self.customer_place_codes):
             self.result.append(self.clean_content(response_content))
+        logging.debug(f"Завершение обработки данных для региона: {self.name}")
 
     @staticmethod
     def clean_content(content):

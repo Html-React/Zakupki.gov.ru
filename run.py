@@ -3,7 +3,6 @@ from src import DataPreparation
 
 
 def main():
-
     data_preparation = DataPreparation()
     data_preparation.run()
 

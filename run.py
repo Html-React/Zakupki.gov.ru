@@ -18,7 +18,7 @@ if __name__ == "__main__":
         ("Severo-Zapadnyy_federalnyy_okrug", "5277336", "OKER31"),
         ("Severo-Kavkazskiy_federalnyy_okrug", "9409197", "OKER38"),
         ("Sibirskiy_federalnyy_fokrug", "5277384", "OKER35"),
-        ("Uralskiy_federalnyy_okrug", "5277384", "OKER34"),
+        ("Uralskiy_federalnyy_okrug", "5277377", "OKER34"),
         ("Tsentralnyy_federalnyy_okrug", "5277317", "OKER30"),
         ("Yuzhnyy_federalnyy_okrug", "6325041", "OKER37")
     ]

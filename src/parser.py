@@ -5,7 +5,6 @@ import logging
 import os
 
 
-1
 class HTTPClient:
     def __init__(self):
         self.ua = UserAgent()

@@ -8,9 +8,8 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, filename="logfile.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s", encoding='utf-8')
 
-    http_client = HTTPClient()
-    data_fetcher = DataFetcher(http_client)
     data_saver = DataSaver()
+    region_processor = RegionDataProcessor()
 
     regions = [
         ("Dalnevostochnyy_federalnyy_okrug", "5277399", "OKER36"),
@@ -25,8 +24,7 @@ if __name__ == "__main__":
 
     for region_info in tqdm(regions, desc='Выполняется процесс подготовки данных, подождите', bar_format='{l_bar}{bar}',
                             colour='green'):
-        region_processor = RegionDataProcessor(*region_info)
-        region_processor.fetch_and_process_data(data_fetcher)
+        region_processor.fetch_and_process_data(*region_info)
         data_saver.save_to_file(f"result/{region_info[0]}_{datetime.now().strftime('%Y-%m-%d')}.csv",
                                 '\n'.join(region_processor.result))
 

@@ -94,19 +94,15 @@ class RegionDataProcessor:
         BusinessSubject=on&OrderPlacementRnpData=on&OrderPlacementExecutionRequirement=on&orderPlacement94_0=0
         &orderPlacement94_1=0&orderPlacement94_2=0&from={file_p}&registryNumberCsv=true""")
 
-    def __init__(self, name, customer_place, customer_place_codes):
-        self.name = name
-        self.customer_place = customer_place
-        self.customer_place_codes = customer_place_codes
+    def __init__(self):
+        self.data_fetcher = DataFetcher(HTTPClient())
         self.result = []
 
-    def fetch_and_process_data(self, fetcher):
-        logging.debug(f"Начало обработки данных для региона: {self.name}")
-        for response_content in fetcher.fetch_data(self.URL_TEMPLATE,
-                                                   self.customer_place,
-                                                   self.customer_place_codes):
+    def fetch_and_process_data(self, name, customer_place, customer_place_codes):
+        logging.debug(f"Начало обработки данных для региона: {name}")
+        for response_content in self.data_fetcher.fetch_data(self.URL_TEMPLATE, customer_place, customer_place_codes):
             self.result.append(self.clean_content(response_content))
-        logging.debug(f"Завершение обработки данных для региона: {self.name}")
+        logging.debug(f"Завершение обработки данных для региона: {name}")
 
     @staticmethod
     def clean_content(content):

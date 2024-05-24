@@ -8,7 +8,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, filename="logfile.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s", encoding='utf-8')
 
-    data_saver = DataSaver()
+    data_save = DataSave()
     region_processor = RegionDataProcessor()
 
     regions = [
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     for region_info in tqdm(regions, desc='Выполняется процесс подготовки данных, подождите', bar_format='{l_bar}{bar}',
                             colour='green'):
         region_processor.fetch_and_process_data(*region_info)
-        data_saver.save_to_file(f"result/{region_info[0]}_{datetime.now().strftime('%Y-%m-%d')}.csv",
+        data_save.save_to_file(f"result/{region_info[0]}_{datetime.now().strftime('%Y-%m-%d')}.csv",
                                 '\n'.join(region_processor.result))
 
     print(f"Данные подготовлены и записаны")

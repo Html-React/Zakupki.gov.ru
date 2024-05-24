@@ -72,9 +72,8 @@ class DataSave:
     def __init__(self):
         self.date_file = datetime.now().strftime('%Y-%m-%d')
         self.directory_file = 'result'
-        self.extension_file = 'csv'
-        
-    @staticmethod
+        self.extension_file = 'csv'        
+    
     def save_to_file(name_file, data):
         file_path = f'{directory_file}/{name_file}_{date_file}.{extension_file}'
         try:

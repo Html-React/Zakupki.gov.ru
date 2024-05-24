@@ -1,1 +1,1 @@
-from .parser import HTTPClient,  DataFetcher, DataSaver, RegionDataProcessor
+from .parser import HTTPClient,  DataFetcher, DataSave, RegionDataProcessor

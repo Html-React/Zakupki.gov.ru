@@ -4,8 +4,11 @@ from src import HTTPClient,  DataFetcher, DataSaver, RegionDataProcessor
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, filename="logfile.log", filemode="w",
-                        format="%(asctime)s %(levelname)s %(message)s", encoding='utf-8')
+    logging.basicConfig(level=logging.INFO, 
+                        filename="logfile.log", 
+                        filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s", 
+                        encoding='utf-8')
 
     data_save = DataSave()
     region_processor = RegionDataProcessor()

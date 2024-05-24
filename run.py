@@ -24,8 +24,7 @@ if __name__ == "__main__":
     for region_info in tqdm(regions, desc='Выполняется процесс подготовки данных, подождите', bar_format='{l_bar}{bar}',
                             colour='green'):
         region_processor.fetch_and_process_data(*region_info)
-        data_save.save_to_file(f"region_info[0]",
-                                '\n'.join(region_processor.result))
+        data_save.save_to_file(f"region_info[0]",'\n'.join(region_processor.result))
 
     print(f"Данные подготовлены и записаны")
     logging.info(f"Данные подготовлены и записаны: {datetime.now().strftime('%Y-%m-%d')}")

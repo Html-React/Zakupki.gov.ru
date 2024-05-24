@@ -68,6 +68,9 @@ class DataFetcher:
 
 
 class DataSave:
+    def __init__(self):
+        self.name_file = 
+        
     @staticmethod
     def save_to_file(file_path, data):
         try:

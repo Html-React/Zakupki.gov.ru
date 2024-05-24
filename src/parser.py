@@ -67,7 +67,7 @@ class DataFetcher:
                 yield response_content
 
 
-class DataSaver:
+class DataSave:
     @staticmethod
     def save_to_file(file_path, data):
         try:

@@ -74,7 +74,7 @@ class DataSave:
         self.directory_file = 'result'
         self.extension_file = 'csv'        
     
-    def save_to_file(name_file, data):
+    def save_to_file(self, name_file, data):
         file_path = f'{directory_file}/{name_file}_{date_file}.{extension_file}'
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)

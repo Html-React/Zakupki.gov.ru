@@ -71,9 +71,12 @@ class DataFetcher:
 class DataSave:
     def __init__(self):
         self.data_file = datetime.now().strftime('%Y-%m-%d')
+        self.directory_file = 'result'
+        self.extension = 'csv'
         
     @staticmethod
-    def save_to_file(file_path, data):
+    def save_to_file(name, data):
+        file_path = f'{directory_file}/{name}_{data_file}.{extension}'
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             logging.debug(f"Каталог '{os.path.dirname(file_path)}' создан или уже существует")

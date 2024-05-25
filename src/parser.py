@@ -75,7 +75,7 @@ class DataSave:
         self.extension_file = 'csv'        
     
     def save_to_file(self, name_file, data):
-        file_path = f'{directory_file}/{name_file}_{date_file}.{extension_file}'
+        file_path = f'{self.directory_file}/{name_file}_{self.date_file}.{self.extension_file}'
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             logging.debug(f"Каталог '{os.path.dirname(file_path)}' создан или уже существует")
